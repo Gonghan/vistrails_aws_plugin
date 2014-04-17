@@ -23,9 +23,9 @@ version = "0.0.5"
 name = "AmazonPlugin"
 identifier = "edu.cmu.nasaproject.vistrails.amazonplugin"
 #this is my private key, username and public dns, change it into yours
-private_key="~/Desktop/gonghankey.pem"
+private_key="~/Desktop/credential/free_instance.pem"
 username="ubuntu"
-public_dns="ec2-54-84-103-94.compute-1.amazonaws.com"
+public_dns="ec2-54-193-41-130.us-west-1.compute.amazonaws.com"
 ssh_command_pre="ssh -i "+private_key+" "+username+"@"+public_dns
 scp_command_pre="scp -i "+private_key
 
@@ -52,11 +52,11 @@ class JobStatusViewer(QtGui.QWidget):
         username = loginWindow.username
         password = loginWindow.password
 	displayText=""
-	queue_command=ssh_command_pre+" \"find ~/hecc/job_queue -type f| grep '/"+username+"_'"+"\""
+	queue_command=ssh_command_pre+" \"find ~/hecc/Server/job_queue -type f| grep '/"+username+"_'"+"\""
 	print >> sys.stderr, queue_command
-	running_command=ssh_command_pre+" \"find ~/hecc/running -type f| grep '/"+username+"_'"+"\""
+	running_command=ssh_command_pre+" \"find ~/hecc/Server/running -type f| grep '/"+username+"_'"+"\""
 	print >> sys.stderr, running_command
-	done_command=ssh_command_pre+" \"find ~/hecc/done -type f| grep '/"+username+"_'"+"\""
+	done_command=ssh_command_pre+" \"find ~/hecc/Server/done -type f| grep '/"+username+"_'"+"\""
 	print >> sys.stderr, done_command
 
 	queue_results=os.popen(queue_command,"r")
@@ -71,7 +71,7 @@ class JobStatusViewer(QtGui.QWidget):
 	    except:
 		break
 	    if not line: break
-	    displayText+=line.replace("/home/ubuntu/hecc/job_queue","")
+	    displayText+=line.replace("/home/ubuntu/hecc/Server/job_queue","")
 	    sys.stdout.flush() 
 	queue_results.close()
 	displayText+="<br>Running"
@@ -82,7 +82,7 @@ class JobStatusViewer(QtGui.QWidget):
 	    except:
 		break
 	    if not line: break
-	    displayText+=line.replace("/home/ubuntu/hecc/running","")
+	    displayText+=line.replace("/home/ubuntu/hecc/Server/running","")
 	    sys.stdout.flush() 
 	running_results.close()
 	displayText+="<br>Done"
@@ -93,7 +93,7 @@ class JobStatusViewer(QtGui.QWidget):
 	    except:
 		break
 	    if not line: break
-	    displayText+=line.replace("/home/ubuntu/hecc/done","")
+	    displayText+=line.replace("/home/ubuntu/hecc/Server/done","")
 	    sys.stdout.flush() 
 	done_results.close()
 
@@ -280,14 +280,14 @@ class SendViewer(QtGui.QWidget):
 	print >> sys.stderr, "##### config_text: "+config_text
 
 	#look at http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AccessingInstancesLinux.html
-	command=ssh_command_pre+" \"echo -ne '"+config_text+"' >> ~/hecc/config/"+remote_filename+".yml" + "\""
+	command=ssh_command_pre+" \"echo -ne '"+config_text+"' >> ~/hecc/Server/config/"+remote_filename+".yml" + "\""
 
 	print >> sys.stderr, "##### ssh_command: "+command
 	os.system(command)
 
 	#Sample: scp -i ~/Downloads/gonghankey.pem test.py ubuntu@ec2-54-200-158-71.us-west-2.compute.amazonaws.com:~/hecc/job_queue
 
-	destination="~/hecc/job_queue/"+remote_filename+".vt"
+	destination="~/hecc/Server/job_queue/"+remote_filename+".vt"
 	command=scp_command_pre+" "+vt_filepath+" ubuntu@"+public_dns+":"+destination
 	print >> sys.stderr, "##### scp_command: "+command
 	os.system(command)
